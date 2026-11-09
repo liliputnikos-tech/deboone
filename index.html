@@ -208,15 +208,55 @@
         <a class="btn btn--ghost reveal" href="https://www.instagram.com/deboone_music/" target="_blank" rel="noopener">More clips on Instagram ↗</a>
       </div>
       <div class="live__clips">
-        <figure class="clip reveal">
-          <video src="assets/video/live-1.mp4" poster="assets/video/live-1.jpg" muted loop playsinline preload="none" aria-label="DEBOÖNE DJing an open-air set"></video>
-          <figcaption class="clip__hud mono"><span class="clip__rec"><i></i>REC</span><span>CAM 01</span></figcaption>
+        <figure class="clip reveal" data-clip>
+          <video src="assets/video/live-1.mp4" poster="assets/video/live-1.jpg" muted loop playsinline webkit-playsinline preload="metadata" aria-label="DEBOÖNE DJing an open-air set"></video>
+          <figcaption class="clip__hud mono"><span class="clip__rec"><i></i><b class="clip__state">PREVIEW</b></span><span>CAM 01</span></figcaption>
           <span class="clip__scan" aria-hidden="true"></span>
+          <button class="clip__big" type="button" aria-label="Play video with sound">
+            <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+            <span class="clip__bigtxt mono">Play with sound</span>
+          </button>
+          <div class="clip__bar">
+            <button class="clip__btn clip__pp" type="button" aria-label="Play">
+              <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>
+              <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+            </button>
+            <div class="clip__prog" role="slider" tabindex="0" aria-label="Seek video" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="clip__fill"></span></div>
+            <span class="clip__time mono">0:00</span>
+            <button class="clip__btn clip__mute" type="button" aria-label="Unmute">
+              <svg class="i-vol" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path class="stroke" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+              <svg class="i-muted" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path class="stroke" d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>
+            </button>
+            <button class="clip__btn clip__fs" type="button" aria-label="Fullscreen">
+              <svg viewBox="0 0 24 24"><path class="stroke" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            </button>
+          </div>
         </figure>
-        <figure class="clip clip--offset reveal">
-          <video src="assets/video/live-2.mp4" poster="assets/video/live-2.jpg" muted loop playsinline preload="none" aria-label="360° view of DEBOÖNE's open-air DJ set"></video>
-          <figcaption class="clip__hud mono"><span class="clip__rec"><i></i>REC</span><span>CAM 02 · 360°</span></figcaption>
+        <figure class="clip clip--offset reveal" data-clip>
+          <video src="assets/video/live-2.mp4" poster="assets/video/live-2.jpg" muted loop playsinline webkit-playsinline preload="metadata" aria-label="360° view of DEBOÖNE's open-air DJ set"></video>
+          <figcaption class="clip__hud mono"><span class="clip__rec"><i></i><b class="clip__state">PREVIEW</b></span><span>CAM 02 · 360°</span></figcaption>
           <span class="clip__scan" aria-hidden="true"></span>
+          <button class="clip__big" type="button" aria-label="Play video with sound">
+            <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+            <span class="clip__bigtxt mono">Play with sound</span>
+          </button>
+          <div class="clip__bar">
+            <button class="clip__btn clip__pp" type="button" aria-label="Play">
+              <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>
+              <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+            </button>
+            <div class="clip__prog" role="slider" tabindex="0" aria-label="Seek video" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="clip__fill"></span></div>
+            <span class="clip__time mono">0:00</span>
+            <button class="clip__btn clip__mute" type="button" aria-label="Unmute">
+              <svg class="i-vol" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path class="stroke" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+              <svg class="i-muted" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path class="stroke" d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>
+            </button>
+            <button class="clip__btn clip__fs" type="button" aria-label="Fullscreen">
+              <svg viewBox="0 0 24 24"><path class="stroke" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            </button>
+          </div>
         </figure>
       </div>
     </div>

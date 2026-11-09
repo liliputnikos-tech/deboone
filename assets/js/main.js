@@ -104,7 +104,7 @@
   // mini player visibility: when playing & player off-screen
   let playerVisible = true;
   new IntersectionObserver(es => { playerVisible = es[0].isIntersecting; updMini(); }, { threshold: .15 }).observe($('#player'));
-  const updMini = () => { const on = !playerVisible && (!audio.paused || audio.currentTime > 0); mini.classList.toggle('is-visible', on); mini.setAttribute('aria-hidden', !on); };
+  const updMini = () => { const on = !playerVisible && !audio.paused; mini.classList.toggle('is-visible', on); mini.setAttribute('aria-hidden', !on); };
   audio.addEventListener('play', updMini); audio.addEventListener('pause', updMini);
 
   // seeking
@@ -176,10 +176,65 @@
   audio.addEventListener('timeupdate', () => { tCur.textContent = fmt(audio.currentTime); miniTime.textContent = fmt(audio.currentTime); if (audio.paused) drawWave(); });
   addEventListener('resize', drawWave);
   drawWave(); requestAnimationFrame(frame);
-  /* ---------- live clips: play only when visible ---------- */
-  const vids = $$('.clip video');
-  const vio = new IntersectionObserver(es => es.forEach(e => { const v = e.target; if (e.isIntersecting && !reduce) { v.preload = 'auto'; const p = v.play(); p && p.catch(() => {}); } else v.pause(); }), { threshold: .25 });
-  vids.forEach(v => vio.observe(v));
+  /* ---------- live clips: muted preview loop + full player with sound ---------- */
+  const clips = $$('[data-clip]').map(fig => {
+    const v = $('video', fig), fill = $('.clip__fill', fig), prog = $('.clip__prog', fig), time = $('.clip__time', fig), state = $('.clip__state', fig);
+    const c = { fig, v, active: false, visible: false };
+    const sync = () => {
+      fig.classList.toggle('is-playing', !v.paused); fig.classList.toggle('is-muted', v.muted); fig.classList.toggle('is-active', c.active);
+      state.textContent = c.active ? (v.paused ? 'PAUSED' : 'LIVE') : 'PREVIEW';
+      $('.clip__pp', fig).setAttribute('aria-label', v.paused ? 'Play' : 'Pause');
+      $('.clip__mute', fig).setAttribute('aria-label', v.muted ? 'Unmute' : 'Mute');
+      $('.clip__big', fig).setAttribute('aria-label', c.active ? (v.paused ? 'Play' : 'Pause') : 'Play video with sound');
+    };
+    const tick = () => { const d = v.duration || 0; const p = d ? v.currentTime / d : 0; fill.style.width = (p * 100) + '%'; time.textContent = fmt(c.active ? v.currentTime : 0); prog.setAttribute('aria-valuenow', Math.round(p * 100)); };
+    let idleT; const wake = () => { fig.classList.remove('is-idle'); clearTimeout(idleT); if (!v.paused) idleT = setTimeout(() => fig.classList.add('is-idle'), 2500); };
+    c.activate = () => { // start properly: from the beginning, with sound
+      clips.forEach(o => o !== c && o.deactivate());
+      if (!audio.paused) audio.pause();
+      c.active = true; v.loop = false; v.muted = false; v.currentTime = 0;
+      const pr = v.play(); pr && pr.catch(() => { v.muted = true; v.play().catch(() => {}); sync(); });
+      sync(); wake();
+    };
+    c.deactivate = () => { if (!c.active) return; c.active = false; v.pause(); v.muted = true; v.loop = true; sync(); tick(); if (c.visible && !reduce) { v.play().catch(() => {}); } };
+    c.toggle = () => {
+      if (!c.active) return c.activate();
+      if (v.paused) { clips.forEach(o => o !== c && o.deactivate()); if (!v.muted && !audio.paused) audio.pause(); v.play().catch(() => {}); } else v.pause();
+      wake();
+    };
+    $('.clip__big', fig).addEventListener('click', e => { e.stopPropagation(); c.toggle(); });
+    $('.clip__pp', fig).addEventListener('click', e => { e.stopPropagation(); c.toggle(); });
+    v.addEventListener('click', () => c.toggle());
+    $('.clip__mute', fig).addEventListener('click', e => { e.stopPropagation(); v.muted = !v.muted; if (!v.muted && !v.paused && !audio.paused) audio.pause(); sync(); wake(); });
+    $('.clip__fs', fig).addEventListener('click', e => {
+      e.stopPropagation(); if (!c.active) c.activate();
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (fig.requestFullscreen) fig.requestFullscreen().catch(() => v.webkitEnterFullscreen && v.webkitEnterFullscreen());
+      else if (fig.webkitRequestFullscreen) fig.webkitRequestFullscreen();
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    });
+    let drag = false;
+    const seek = e => { const r = prog.getBoundingClientRect(); const p = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); if (v.duration) v.currentTime = p * v.duration; tick(); };
+    prog.addEventListener('pointerdown', e => { e.stopPropagation(); drag = true; prog.setPointerCapture(e.pointerId); seek(e); wake(); });
+    prog.addEventListener('pointermove', e => drag && seek(e));
+    prog.addEventListener('pointerup', () => drag = false); prog.addEventListener('pointercancel', () => drag = false);
+    prog.addEventListener('keydown', e => { if (e.key === 'ArrowRight') v.currentTime = Math.min(v.duration || 0, v.currentTime + 5); if (e.key === 'ArrowLeft') v.currentTime = Math.max(0, v.currentTime - 5); tick(); });
+    fig.addEventListener('pointermove', wake); fig.addEventListener('touchstart', wake, { passive: true });
+    ['play', 'pause', 'volumechange'].forEach(ev => v.addEventListener(ev, () => { sync(); if (ev === 'play' && c.active && !v.muted && !audio.paused) audio.pause(); }));
+    v.addEventListener('play', wake);
+    v.addEventListener('timeupdate', tick);
+    v.addEventListener('ended', () => { c.active = false; v.muted = true; v.loop = true; v.currentTime = 0; sync(); tick(); if (c.visible && !reduce) v.play().catch(() => {}); });
+    sync();
+    return c;
+  });
+  // main track starting pauses any video playing with sound
+  audio.addEventListener('play', () => clips.forEach(c => { if (c.active && !c.v.paused && !c.v.muted) c.v.pause(); }));
+  const vio = new IntersectionObserver(es => es.forEach(e => {
+    const c = clips.find(x => x.fig === e.target); c.visible = e.isIntersecting;
+    if (c.active) { if (!e.isIntersecting && !document.fullscreenElement) c.v.pause(); return; }
+    if (e.isIntersecting && !reduce) { c.v.preload = 'auto'; c.v.play().catch(() => {}); } else c.v.pause();
+  }), { threshold: .25 });
+  clips.forEach(c => vio.observe(c.fig));
   // expose for testing
-  window.__deboone = { audio };
+  window.__deboone = { audio, clips };
 })();
