@@ -3,7 +3,7 @@ name: assets
 on:
   push:
     branches: [main]
-    paths: [_b64/manifest.json, _b64/decode.py, .github/workflows/assets.yml]
+    paths: [_b64/manifest.json, .github/decode.py, .github/workflows/assets.yml]
   workflow_dispatch:
 
 permissions:
@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Decode binary assets (images, fonts, audio, video)
-        run: python3 _b64/decode.py
+        run: python3 .github/decode.py
       - name: Commit decoded assets
         run: |
           if [ ! -f _b64/.done ]; then echo "Upload incomplete, skipping"; exit 0; fi
