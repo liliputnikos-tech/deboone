@@ -213,7 +213,7 @@ strong{color:#fff;font-weight:600}
 .quote{padding:clamp(60px,10vw,140px) var(--pad);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;
   background:radial-gradient(60% 120% at 50% 50%,rgba(255,42,74,.12),transparent 70%)}
 .quote__text{margin:0;text-align:center;font-family:var(--display);font-weight:900;font-size:clamp(26px,7.2vw,118px);line-height:1;color:#fff;letter-spacing:-.01em}
-.outline{color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.85)}
+.outline{color:#0d0810;-webkit-text-stroke:3px rgba(255,255,255,.9);paint-order:stroke fill}
 
 /* ---------- gallery ---------- */
 .grid{columns:2;column-gap:10px}
