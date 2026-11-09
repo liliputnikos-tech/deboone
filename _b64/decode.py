@@ -7,6 +7,7 @@ if missing:
 data = base64.b64decode(''.join(open(p).read() for p in parts))
 assert hashlib.sha256(data).hexdigest() == M['sha256'] and len(data) == M['size'], 'checksum mismatch'
 with tarfile.open(fileobj=io.BytesIO(data)) as t:
+    n = len(t.getnames())
     t.extractall('.', filter='data')
-print('extracted', len(t.getnames()), 'entries')
+print('extracted', n, 'entries')
 open('_b64/.done', 'w').write('1')

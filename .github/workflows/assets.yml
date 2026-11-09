@@ -3,7 +3,7 @@ name: assets
 on:
   push:
     branches: [main]
-    paths: [_b64/manifest.json, .github/workflows/assets.yml]
+    paths: [_b64/manifest.json, _b64/decode.py, .github/workflows/assets.yml]
   workflow_dispatch:
 
 permissions:
